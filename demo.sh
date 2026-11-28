@@ -54,6 +54,7 @@ git checkout -q -b "$DEMO_BRANCH"
 git config push.autoSetupRemote true
 # advisor's --push/PR flow looks up the current branch on GitHub, so it must exist remotely
 git push -q -u origin "$DEMO_BRANCH"
+gh repo set-default dipalpat/hello-spring-boot-2-6   # fresh clone has no gh default repo
 echo "(demo branch: $DEMO_BRANCH)" >&2
 # `sdk use java` with no version prompts interactively; `sdk env install` reads .sdkmanrc and installs the JDK if missing
 step "Install and select the project's Java version" "sdk env install"
@@ -61,14 +62,22 @@ step "Install and select the project's Java version" "sdk env install"
 step "Publish the build config" "advisor build-config publish"
 step "Show the upgrade plan"    "advisor upgrade-plan get"
 step "Apply the first 3 steps, squashed" \
-  "advisor upgrade-plan apply --squash 3"
+  "advisor upgrade-plan apply --squash 3 --push"
+step "Merge the PR on GitHub, then continue" \
+  "gh pr merge ${DEMO_BRANCH}-upgrade-plan --merge --delete-branch"
+pe "git pull -q"
 step "Re-publish the build config" "advisor build-config publish"
 
 step "Apply available patches and push" "advisor patch apply --push"
-
+step "Merge the PR on GitHub, then continue" \
+  "gh pr merge ${DEMO_BRANCH}-patch-upgrade --merge --delete-branch"
+pe "git pull -q"
 step "Show the remaining upgrade plan" "advisor upgrade-plan get"
 step "Apply the next 6 steps, squashed, and push" \
   "advisor upgrade-plan apply --squash 6 --push"
+step "Merge the PR on GitHub, then continue" \
+  "gh pr merge ${DEMO_BRANCH}-upgrade-plan --merge --delete-branch"
+pe "git pull -q"
 step "Final build config publish" "advisor build-config publish"
 
 p "# Done!"
