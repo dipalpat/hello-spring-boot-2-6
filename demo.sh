@@ -52,9 +52,11 @@ pe "cd hello-spring-boot-2-6"
 DEMO_BRANCH="demo/advisor-$(date +%Y%m%d-%H%M%S)"
 git checkout -q -b "$DEMO_BRANCH"
 git config push.autoSetupRemote true
+# advisor's --push/PR flow looks up the current branch on GitHub, so it must exist remotely
+git push -q -u origin "$DEMO_BRANCH"
 echo "(demo branch: $DEMO_BRANCH)" >&2
-# `sdk use java` with no version prompts interactively; `sdk env` reads .sdkmanrc
-step "Select the project's Java version" "sdk env"
+# `sdk use java` with no version prompts interactively; `sdk env install` reads .sdkmanrc and installs the JDK if missing
+step "Install and select the project's Java version" "sdk env install"
 
 step "Publish the build config" "advisor build-config publish"
 step "Show the upgrade plan"    "advisor upgrade-plan get"
