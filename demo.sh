@@ -65,19 +65,21 @@ step "Apply the first 3 steps, squashed" \
   "advisor upgrade-plan apply --squash 3 --push"
 step "Merge the PR on GitHub, then continue" \
   "gh pr merge ${DEMO_BRANCH}-upgrade-plan --merge --delete-branch"
-pe "git pull -q"
+pe "git fetch -q && git reset -q --hard origin/${DEMO_BRANCH}"
 step "Re-publish the build config" "advisor build-config publish"
 
 step "Apply available patches and push" "advisor patch apply --push"
 step "Merge the PR on GitHub, then continue" \
   "gh pr merge ${DEMO_BRANCH}-patch-upgrade --merge --delete-branch"
-pe "git pull -q"
+pe "git fetch -q && git reset -q --hard origin/${DEMO_BRANCH}"
 step "Show the remaining upgrade plan" "advisor upgrade-plan get"
 step "Apply the next 6 steps, squashed, and push" \
   "advisor upgrade-plan apply --squash 6 --push"
 step "Merge the PR on GitHub, then continue" \
   "gh pr merge ${DEMO_BRANCH}-upgrade-plan --merge --delete-branch"
-pe "git pull -q"
+pe "git fetch -q && git reset -q --hard origin/${DEMO_BRANCH}"
 step "Final build config publish" "advisor build-config publish"
+
+step "Clean up the demo branch" "git push origin --delete ${DEMO_BRANCH}"
 
 p "# Done!"
