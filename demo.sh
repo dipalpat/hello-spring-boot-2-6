@@ -4,7 +4,6 @@
 #
 # Usage: ./demo.sh [-n]      (-n = no simulated typing)
 
-set -u
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- fetch demo-magic.sh next to this script if missing ---------------------
